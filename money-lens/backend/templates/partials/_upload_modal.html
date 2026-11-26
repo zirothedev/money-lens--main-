@@ -1,0 +1,85 @@
+{# Upload -> processing -> ready/error, all inside one modal. Behaviour: static/js/upload.js #}
+<div class="modal" id="upload-modal" hidden>
+  <div class="modal__backdrop" data-modal-backdrop></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="upload-title" tabindex="-1"
+       data-upload-url="{% url 'statements:upload' %}"
+       data-process-url="{% url 'statements:process' '00000000-0000-0000-0000-000000000000' %}"
+       data-report-url="{% url 'reports:detail' '00000000-0000-0000-0000-000000000000' %}"
+       data-login-url="{% url 'accounts:login' %}"
+       data-max-bytes="{{ max_upload_bytes }}"
+       data-max-label="{{ max_upload_label }}">
+
+    {# ---- 1. choose a file ---- #}
+    <section class="modal__state" data-state="select">
+      <button type="button" class="icon-btn modal__close" data-modal-close aria-label="Close">
+        <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+      </button>
+      <h2 id="upload-title" class="modal__title">Upload your statement</h2>
+      <p class="modal__text">Drag and drop your bank statement here, or choose a file from your device.</p>
+
+      <div class="dropzone" data-dropzone>
+        <span class="dropzone__icon" aria-hidden="true"><svg class="icon"><use href="#i-upload-cloud"></use></svg></span>
+        <p class="dropzone__title">Drop your file here</p>
+        <p class="dropzone__or">or</p>
+        <input class="visually-hidden" type="file" id="statement-file" name="statement" accept=".pdf,.csv,application/pdf,text/csv" data-file-input>
+        <label class="btn btn--outline" for="statement-file">Choose file</label>
+        <p class="dropzone__hint">PDF or CSV &middot; Max {{ max_upload_label }}</p>
+      </div>
+
+      <p class="form-error" role="alert" data-file-error hidden></p>
+
+      <div class="file-card" data-file-card hidden>
+        <span class="file-card__icon" aria-hidden="true"><svg class="icon"><use href="#i-file"></use></svg></span>
+        <div class="file-card__meta">
+          <p class="file-card__name" data-file-name></p>
+          <p class="file-card__detail"><span data-file-size></span> <span aria-hidden="true">&middot;</span> <span data-file-type></span></p>
+        </div>
+        <button type="button" class="icon-btn" data-file-remove aria-label="Remove selected file">
+          <svg class="icon" aria-hidden="true"><use href="#i-x"></use></svg>
+        </button>
+      </div>
+
+      <button type="button" class="btn btn--primary btn--block" data-analyze disabled>
+        Analyze Statement
+        <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+      </button>
+      <p class="modal__fineprint">We delete your original file as soon as your report is ready.</p>
+    </section>
+
+    {# ---- 2. processing ---- #}
+    <section class="modal__state modal__state--center" data-state="processing" hidden>
+      <div class="spinner" aria-hidden="true"></div>
+      <h2 class="modal__title" id="processing-title">Analyzing your statement</h2>
+      <ol class="steps" data-steps aria-labelledby="processing-title">
+        <li class="step" data-step><span class="step__mark" aria-hidden="true"><svg class="icon"><use href="#i-check"></use></svg></span><span class="step__text">Reading your statement…</span></li>
+        <li class="step" data-step><span class="step__mark" aria-hidden="true"><svg class="icon"><use href="#i-check"></use></svg></span><span class="step__text">Finding your transactions…</span></li>
+        <li class="step" data-step><span class="step__mark" aria-hidden="true"><svg class="icon"><use href="#i-check"></use></svg></span><span class="step__text">Organizing your money…</span></li>
+        <li class="step" data-step><span class="step__mark" aria-hidden="true"><svg class="icon"><use href="#i-check"></use></svg></span><span class="step__text">Identifying recipients…</span></li>
+        <li class="step" data-step><span class="step__mark" aria-hidden="true"><svg class="icon"><use href="#i-check"></use></svg></span><span class="step__text">Adding up your transfers…</span></li>
+        <li class="step" data-step><span class="step__mark" aria-hidden="true"><svg class="icon"><use href="#i-check"></use></svg></span><span class="step__text">Preparing your report…</span></li>
+      </ol>
+      <p class="visually-hidden" role="status" aria-live="polite" data-progress-announcer></p>
+    </section>
+
+    {# ---- 3. ready ---- #}
+    <section class="modal__state modal__state--center" data-state="ready" hidden>
+      <span class="badge-check" aria-hidden="true"><svg class="icon"><use href="#i-check"></use></svg></span>
+      <h2 class="modal__title" tabindex="-1" data-ready-title>Your report is ready.</h2>
+      <p class="modal__text">We've turned your statement into a simpler view of your money.</p>
+      <a class="btn btn--primary" href="#" data-view-report>View Report
+        <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+      </a>
+      <button type="button" class="link-btn" data-modal-close>Close</button>
+    </section>
+
+    {# ---- 4. problem ---- #}
+    <section class="modal__state modal__state--center" data-state="error" hidden>
+      <span class="badge-alert" aria-hidden="true"><svg class="icon"><use href="#i-alert"></use></svg></span>
+      <h2 class="modal__title" tabindex="-1" data-error-title>Something went wrong</h2>
+      <p class="modal__text modal__text--narrow" role="alert" data-error-message></p>
+      <button type="button" class="btn btn--primary" data-error-retry>Try another file</button>
+      <a class="btn btn--primary" href="{% url 'accounts:login' %}" data-error-login hidden>Log in again</a>
+      <button type="button" class="link-btn" data-modal-close>Close</button>
+    </section>
+  </div>
+</div>

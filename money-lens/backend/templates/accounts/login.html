@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Log in · Where'd My Money Go?{% endblock %}
+{% block layout %}
+<div class="auth">
+  <!-- <aside class="auth__brand">
+    <img src="{% static 'img/brand-banner.jpg' %}" width="1000" height="750" alt="Where'd My Money Go? logo: the name seen through a magnifying glass">
+    <p class="auth__tagline">Your bank statement, finally understandable.</p>
+  </aside> -->
+  <main id="main" class="auth__panel" tabindex="-1">
+    <div class="auth__card">
+      <h1 class="auth__title">Welcome back</h1>
+      <p class="auth__text">Log in to upload a statement and see your reports.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% if form.non_field_errors %}<p class="form-error" role="alert">{{ form.non_field_errors.0 }}</p>{% endif %}
+        {% for field in form %}
+        <div class="field{% if field.errors %} has-error{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% for e in field.errors %}<p class="field__error" role="alert">{{ e }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        <input type="hidden" name="next" value="{{ next }}">
+        <button type="submit" class="btn btn--primary btn--block">Log in</button>
+      </form>
+      <p class="auth__switch">New here? <a href="{% url 'accounts:register' %}">Create an account</a></p>
+    </div>
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block title %}Report not found · Where'd My Money Go?{% endblock %}
+{% block content %}
+<section class="card notice" data-testid="report-not-found">
+  <span class="badge-alert" aria-hidden="true"><svg class="icon"><use href="#i-alert"></use></svg></span>
+  <h1 class="notice__title">We couldn't find that report</h1>
+  <p class="notice__text">It may have been removed, or the link may be wrong. You can only open reports from your own account.</p>
+  <div class="notice__actions">
+    <a class="btn btn--primary" href="{% url 'reports:history' %}">Go to your reports</a>
+    <a class="btn btn--outline" href="{% url 'home' %}">Back to home</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,67 @@
+{% load static %}
+{# Phones: a white bar with a hamburger. The purple menu only appears when it is opened. #}
+<nav class="mhead" aria-label="Main menu">
+  <a class="mhead__brand" href="{% url 'home' %}" aria-label="Where'd My Money Go? home">
+    <span class="brand__mark" aria-hidden="true"><svg class="icon"><use href="#i-logomark"></use></svg></span>
+    <span class="mhead__name" aria-hidden="true">Where'd My Money Go?</span>
+  </a>
+  <details class="mnav">
+    <summary class="mnav__toggle">
+      <span class="visually-hidden">Menu</span>
+      <svg class="mnav__open" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <svg class="mnav__close" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </summary>
+    <div class="mnav__panel">
+      {% if user.is_authenticated %}
+      <div class="mnav__user"><span class="avatar" aria-hidden="true">{{ user.get_username|slice:":1"|upper }}</span><span>{{ user.get_username }}</span></div>
+      {% endif %}
+      <a class="mnav__link{% if active_nav == 'home' %} is-active{% endif %}" href="{% url 'home' %}"{% if active_nav == 'home' %} aria-current="page"{% endif %}>
+        <svg class="icon" aria-hidden="true"><use href="#i-home"></use></svg>Home
+      </a>
+      <a class="mnav__link{% if active_nav == 'reports' %} is-active{% endif %}" href="{% url 'reports:history' %}"{% if active_nav == 'reports' %} aria-current="page"{% endif %}>
+        <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg>Reports
+      </a>
+      {% if user.is_authenticated %}
+      <form method="post" action="{% url 'accounts:logout' %}" class="mnav__form">
+        {% csrf_token %}
+        <button type="submit" class="mnav__link"><svg class="icon" aria-hidden="true"><use href="#i-log-out"></use></svg>Log out</button>
+      </form>
+      {% else %}
+      <div class="mnav__form"><a class="mnav__link" href="{% url 'accounts:login' %}"><svg class="icon" aria-hidden="true"><use href="#i-log-in"></use></svg>Log in</a></div>
+      {% endif %}
+    </div>
+  </details>
+</nav>
+
+<aside class="sidebar" aria-label="Main">
+  <a class="brand" href="{% url 'home' %}">
+    <span class="brand__mark" aria-hidden="true"><svg class="icon"><use href="#i-logomark"></use></svg></span>
+    <span class="brand__name">Where'd My<br>Money Go?</span>
+  </a>
+
+  <nav class="sidebar__nav" aria-label="Primary">
+    <a class="nav-link{% if active_nav == 'home' %} is-active{% endif %}" href="{% url 'home' %}"{% if active_nav == 'home' %} aria-current="page"{% endif %}>
+      <svg class="icon" aria-hidden="true"><use href="#i-home"></use></svg><span>Home</span>
+    </a>
+    <a class="nav-link{% if active_nav == 'reports' %} is-active{% endif %}" href="{% url 'reports:history' %}"{% if active_nav == 'reports' %} aria-current="page"{% endif %}>
+      <svg class="icon" aria-hidden="true"><use href="#i-list"></use></svg><span>Reports</span>
+    </a>
+  </nav>
+
+  <div class="sidebar__foot">
+    {% if user.is_authenticated %}
+      <span class="avatar" aria-hidden="true">{{ user.get_username|slice:":1"|upper }}</span>
+      <span class="sidebar__user">{{ user.get_username }}</span>
+      <form method="post" action="{% url 'accounts:logout' %}" class="sidebar__logout">
+        {% csrf_token %}
+        <button type="submit" class="icon-btn icon-btn--dark" aria-label="Log out">
+          <svg class="icon" aria-hidden="true"><use href="#i-log-out"></use></svg>
+        </button>
+      </form>
+    {% else %}
+      <a class="nav-link nav-link--foot" href="{% url 'accounts:login' %}">
+        <svg class="icon" aria-hidden="true"><use href="#i-log-in"></use></svg><span>Log in</span>
+      </a>
+    {% endif %}
+  </div>
+</aside>

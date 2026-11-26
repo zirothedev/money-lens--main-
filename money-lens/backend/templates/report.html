@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+{% load static report_extras %}
+{% block title %}{{ period_label|default:"Your report" }} · Where'd My Money Go?{% endblock %}
+{% block body_class %}is-report{% endblock %}
+
+{% block topbar %}
+<header class="topbar">
+  <a class="topbar__back" href="{% url 'reports:history' %}">
+    <svg class="icon" aria-hidden="true"><use href="#i-arrow-left"></use></svg><span>All reports</span>
+  </a>
+  <div class="topbar__actions">
+    <span class="status-pill"><svg class="icon" aria-hidden="true"><use href="#i-check"></use></svg>Statement analyzed</span>
+    <a class="btn btn--outline btn--sm" href="{% url 'home' %}?upload=1">New statement</a>
+  </div>
+</header>
+{% endblock %}
+
+{% block content %}
+<div class="report">
+  <header class="report__header">
+    <h1 class="report__title">Where'd My Money Go?</h1>
+    {% if period_label %}<p class="report__period" data-testid="report-period">{{ period_label }}</p>{% endif %}
+    <p class="report__intro">{{ intro }}</p>
+  </header>
+
+  <section class="stats" aria-label="Overview">
+    <article class="card stat">
+      <span class="tile tile--lg" aria-hidden="true"><svg class="icon"><use href="#i-arrow-down-left"></use></svg></span>
+      <div>
+        <p class="stat__label">Total received</p>
+        <p class="stat__value" data-testid="total-received">{{ total_received|money:currency }}</p>
+        <p class="stat__meta">{{ incoming_count }} transaction{{ incoming_count|pluralize }}</p>
+      </div>
+    </article>
+    <article class="card stat">
+      <span class="tile tile--lg" aria-hidden="true"><svg class="icon"><use href="#i-arrow-up-right"></use></svg></span>
+      <div>
+        <p class="stat__label">Total sent</p>
+        <p class="stat__value" data-testid="total-sent">{{ total_sent|money:currency }}</p>
+        <p class="stat__meta">{{ outgoing_count }} transaction{{ outgoing_count|pluralize }}</p>
+      </div>
+    </article>
+  </section>
+
+  <div class="split">
+    <section class="card money" aria-labelledby="money-title">
+      <h2 id="money-title" class="card__title">Where your money went</h2>
+      <p class="card__sub">Recipients named in your statement, ranked by total sent.</p>
+
+      {% if recipients %}
+      <ol class="recipients" data-recipients>
+        {% for r in recipients %}
+        <li class="recipient" data-testid="recipient">
+          <button type="button" class="recipient__row" aria-expanded="false" aria-controls="rcpt-{{ r.rank }}" data-toggle>
+            <span class="rank">{{ r.rank|stringformat:"02d" }}</span>
+            <span class="recipient__who">
+              <span class="recipient__name">{{ r.name }}</span>
+              <span class="recipient__count">{{ r.transaction_count }} transaction{{ r.transaction_count|pluralize }}</span>
+            </span>
+            <span class="bar" aria-hidden="true"><span class="bar__fill" data-percent="{{ r.percent }}"></span></span>
+            <span class="recipient__amount">{{ r.total_sent|money:currency }}</span>
+            <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
+          </button>
+          <div class="details" id="rcpt-{{ r.rank }}" data-details>
+            <table class="mini-table">
+              <caption class="visually-hidden">Transactions to {{ r.name }}</caption>
+              <thead><tr><th scope="col">Date</th><th scope="col">Amount</th><th scope="col">Narration</th></tr></thead>
+              <tbody>
+                {% for t in r.transactions %}
+                <tr><td>{{ t.date|short_date:show_year }}</td><td>{{ t.amount|money:currency }}</td><td>{{ t.narration }}</td></tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p class="empty">Your statement doesn't name a recipient for any outgoing transaction.</p>
+      {% endif %}
+    </section>
+
+    <section class="card unidentified" aria-labelledby="unid-title">
+      <span class="tile" aria-hidden="true"><svg class="icon"><use href="#i-info"></use></svg></span>
+      <h2 id="unid-title" class="card__title card__title--sm">Unidentified recipients</h2>
+      {% if unidentified.count %}
+        <p class="unidentified__count" data-testid="unidentified-count">{{ unidentified.count }} transaction{{ unidentified.count|pluralize }}</p>
+        <p class="unidentified__amount" data-testid="unidentified-total">{{ unidentified.total|money:currency }}</p>
+        <p class="unidentified__note">The statement doesn't give enough information to identify the recipient.</p>
+        <button type="button" class="link-btn link-btn--left" aria-expanded="false" aria-controls="unid-details" data-toggle-unidentified>
+          <span data-toggle-label>View transactions</span>
+          <svg class="icon chevron" aria-hidden="true"><use href="#i-chevron-down"></use></svg>
+        </button>
+        <div class="details" id="unid-details" data-details>
+          <table class="mini-table">
+            <caption class="visually-hidden">Outgoing transactions with no identified recipient</caption>
+            <thead><tr><th scope="col">Date</th><th scope="col">Amount</th><th scope="col">Narration</th></tr></thead>
+            <tbody>
+              {% for t in unidentified.transactions %}
+              <tr><td>{{ t.date|short_date:show_year }}</td><td>{{ t.amount|money:currency }}</td><td>{{ t.narration }}</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="unidentified__note">Every outgoing transaction in your statement names a recipient.</p>
+      {% endif %}
+    </section>
+  </div>
+
+  <section class="card transactions" aria-labelledby="tx-title" data-transactions>
+    <div class="transactions__head">
+      <h2 id="tx-title" class="card__title">All transactions</h2>
+      <div class="transactions__tools">
+        <div class="search">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+          <label class="visually-hidden" for="tx-search">Search transactions</label>
+          <input id="tx-search" type="search" placeholder="Search transactions…" autocomplete="off" data-tx-search>
+        </div>
+        <div class="segmented" role="group" aria-label="Filter by direction">
+          <button type="button" class="segmented__btn is-active" aria-pressed="true" data-tx-filter="all">All</button>
+          <button type="button" class="segmented__btn" aria-pressed="false" data-tx-filter="in">Money in</button>
+          <button type="button" class="segmented__btn" aria-pressed="false" data-tx-filter="out">Money out</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <table class="tx-table" data-tx-table>
+        <caption class="visually-hidden">All transactions in this statement</caption>
+        <thead>
+          <tr><th scope="col">Date</th><th scope="col">Recipient</th><th scope="col" class="num">Amount</th><th scope="col">Direction</th><th scope="col">Narration</th></tr>
+        </thead>
+        <tbody>
+          {% for t in transactions %}
+          <tr data-tx-row data-direction="{{ t.direction }}" data-search="{{ t.name|default:''|lower }} {{ t.narration|lower }}">
+            <td class="tx__date" data-label="Date">{{ t.date|short_date:show_year }}</td>
+            <td class="tx__name" data-label="{% if t.direction == 'in' %}Sender{% else %}Recipient{% endif %}">
+              {% if t.name %}{% if t.direction == 'in' %}<span class="muted">from</span> {% endif %}{{ t.name }}{% if t.via %}<span class="tx__via">via {{ t.via }}</span>{% endif %}{% else %}<span class="muted">{% if t.direction == 'in' %}Sender{% else %}Recipient{% endif %} unidentified</span>{% endif %}
+            </td>
+            <td class="tx__amount num tx__amount--{{ t.direction }}" data-label="Amount"><span class="sr-only">{% if t.direction == 'in' %}Received {% else %}Sent {% endif %}</span>{% if t.direction == 'in' %}+{% else %}−{% endif %}{{ t.amount|money:currency }}</td>
+            <td class="tx__dir" data-label="Direction">
+              {% if t.direction == 'in' %}<span class="pill pill--in"><svg class="icon" aria-hidden="true"><use href="#i-arrow-down-left"></use></svg>Money in</span>{% else %}<span class="pill pill--out"><svg class="icon" aria-hidden="true"><use href="#i-arrow-up-right"></use></svg>Money out</span>{% endif %}
+            </td>
+            <td class="tx__narr" data-label="Narration">{{ t.narration }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="empty" data-tx-empty hidden>No transactions match your search.</p>
+    <div class="transactions__foot">
+      <p class="muted" data-tx-count role="status" aria-live="polite"></p>
+      <button type="button" class="btn btn--outline btn--sm" data-tx-more hidden>Show more</button>
+    </div>
+  </section>
+
+  <p class="note">
+    <svg class="icon" aria-hidden="true"><use href="#i-info"></use></svg>
+    <span>This report only reflects information present in your statement. No additional information has been added or inferred.</span>
+  </p>
+</div>
+{% endblock %}
+
+{% block scripts %}
+  <script src="{% static 'js/report.js' %}" defer></script>
+{% endblock %}

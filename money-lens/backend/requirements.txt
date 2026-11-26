@@ -1,0 +1,9 @@
+Django>=5.0
+python-dotenv>=1.0
+pdfplumber>=0.11
+dj-database-url>=2.1
+psycopg[binary]>=3.1  # only needed for PostgreSQL in production
+
+# Test-only (builds PDF fixtures); not needed in production
+reportlab>=4.0
+playwright>=1.40   # test-only: browser tests (then run: playwright install chromium)

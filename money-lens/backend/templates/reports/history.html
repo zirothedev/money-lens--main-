@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load report_extras %}
+{% block title %}Your reports · Where'd My Money Go?{% endblock %}
+
+{% block content %}
+<div class="report">
+  <header class="report__header">
+    <p class="eyebrow">Where'd My Money Go?</p>
+    <h1 class="report__title">Your reports</h1>
+    <p class="report__intro">Reports you've generated. Your original statements are not kept.</p>
+  </header>
+
+  {% if items %}
+  <ul class="history">
+    {% for item in items %}
+    <li>
+      <a class="card history__item" href="{% url 'reports:detail' item.report.id %}" data-testid="history-item">
+        <span class="history__period">{{ item.period_label }}</span>
+        <span class="history__figures">
+          <span><span class="muted">Received</span> {{ item.report.total_received|money:item.currency }}</span>
+          <span><span class="muted">Sent</span> {{ item.report.total_sent|money:item.currency }}</span>
+        </span>
+        <span class="muted history__created">Created {{ item.report.created_at|date:"d M Y" }}</span>
+        <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg>
+      </a>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <section class="card empty-card">
+    <h2 class="card__title">No reports yet</h2>
+    <p class="card__sub">Upload a bank statement and your report will appear here.</p>
+    <a class="btn btn--primary" href="{% url 'home' %}?upload=1">Upload Statement
+      <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"></use></svg></a>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,83 @@
+{% load static %}<!doctype html>
+<html lang="en" class="no-js">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token }}">
+  <meta name="theme-color" content="#7837ec">
+  <meta name="description" content="Your bank statement, finally understandable.">
+  <title>{% block title %}Where'd My Money Go?{% endblock %}</title>
+  <link rel="icon" type="image/svg+xml" href="{% static 'img/favicon.svg' %}">
+  <link rel="preload" href="{% static 'fonts/plus-jakarta-sans-latin-wght-normal.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <style>
+    /* ===== Mobile menu: below 900px the dark sidebar is replaced by a white bar with a hamburger ===== */
+    .mhead { display: none; }
+    @keyframes mnav-in { from { opacity: 0; transform: translateY(-6px); } }
+    @media (max-width: 900px) {
+      .shell { grid-template-rows: auto minmax(0, 1fr); }   /* spare height goes to the page, not the bar */
+      .sidebar { display: none; }
+      .mhead {
+        display: flex; align-items: center; justify-content: space-between; gap: 12px; position: sticky; top: 0; z-index: 60;
+        height: 64px; padding: 0 16px; background: #fff; border-bottom: 1px solid #eaecf5;
+      }
+      .mhead__brand { display: inline-flex; align-items: center; gap: 10px; min-width: 0; color: #11102b; text-decoration: none; }
+      .mhead__brand .brand__mark { width: 40px; height: 40px; border-radius: 12px; color: #fff; }
+      .mhead__name { font-weight: 800; font-size: 15px; line-height: 1.1; letter-spacing: -.005em; white-space: nowrap; }
+      .mnav { margin: 0; }
+      .mnav__toggle {
+        display: block; position: relative; width: 46px; height: 46px; border-radius: 13px; border: 1px solid #e8e4f7; background: #fff;
+        color: #11102b; cursor: pointer; list-style: none; -webkit-tap-highlight-color: transparent;
+      }
+      .mnav__toggle::-webkit-details-marker { display: none; }
+      .mnav__toggle svg {
+        position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px;
+        fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round;
+      }
+      .mnav__close { display: none; }
+      .mnav[open] .mnav__toggle { background: #f5f2fd; border-color: #d9d0f5; color: #4b27b4; }
+      .mnav[open] .mnav__open { display: none; }
+      .mnav[open] .mnav__close { display: block; }
+      .mnav__panel {
+        position: absolute; left: 12px; right: 12px; top: calc(100% + 8px); padding: 10px; border-radius: 22px;
+        background: linear-gradient(165deg, #5a35c9 0%, #4222a4 100%); box-shadow: 0 28px 60px rgba(34, 16, 98, .38);
+        animation: mnav-in .16s ease-out;
+      }
+      .mnav__user { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; padding: 10px 12px 14px; color: #fff; font-weight: 700; border-bottom: 1px solid rgba(255, 255, 255, .18); }
+      .mnav__user .avatar { width: 38px; height: 38px; }
+      .mnav__link {
+        display: flex; align-items: center; gap: 14px; width: 100%; min-height: 52px; padding: 0 14px; border: 0; border-radius: 14px;
+        background: none; color: #fff; font: inherit; font-size: 16px; font-weight: 600; text-align: left; text-decoration: none; cursor: pointer;
+      }
+      .mnav__link .icon { width: 20px; height: 20px; }
+      .mnav__link:hover, .mnav__link.is-active { background: rgba(255, 255, 255, .16); }
+      .mnav__link:focus-visible { outline: 3px solid #fff; outline-offset: -3px; }
+      .mnav__form { margin: 6px 0 0; padding-top: 6px; border-top: 1px solid rgba(255, 255, 255, .18); }
+    }
+    /* tidier report cards on phones */
+    @media (max-width: 720px) {
+      .history__item { row-gap: 6px; }
+      .history__figures { gap: 4px 24px; }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+  <script src="{% static 'js/boot.js' %}"></script>
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  <a class="skip-link" href="#main">Skip to content</a>
+  {% include "partials/_icons.html" %}
+  {% block layout %}
+  <div class="shell">
+    {% include "partials/_sidebar.html" %}
+    <div class="shell__main">
+      {% block topbar %}{% endblock %}
+      <main id="main" class="page {% block page_class %}{% endblock %}" tabindex="-1">
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+  {% endblock %}
+  {% block modals %}{% endblock %}
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,305 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Where'd My Money Go?{% endblock %}
+{% block body_class %}is-landing{% endblock %}
+
+{% block extra_head %}
+<style>
+/* ===== Landing page (self-contained: everything here is scoped to .lp) ===== */
+body.is-landing { background: #fdfcff; }
+.lp {
+  --lp-primary: #4b27b4; --lp-primary-2: #5934bf; --lp-ink: #11102b; --lp-text: #555a76; --lp-muted: #666a86;
+  --lp-line: #e8e4f7; --lp-soft: #f5f2fd; --lp-soft-2: #ebe5fa;
+  position: relative; min-height: 100vh; color: var(--lp-ink); overflow-x: clip;
+  background:
+    radial-gradient(1200px 520px at 50% 100%, rgba(120, 90, 220, .10), transparent 70%),
+    linear-gradient(180deg, #fdfcff 0%, #f8f7fe 60%, #f6f4fd 100%);
+}
+.lp a { text-decoration: none; }
+
+/* ---- header ---- */
+.lp-header { position: relative; z-index: 20; display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  padding: 28px clamp(20px, 7.7vw, 112px); }
+.lp-brand { display: inline-flex; align-items: center; gap: 16px; color: var(--lp-ink); }
+.lp-logo { width: 52px; height: 52px; border-radius: 15px; display: grid; place-items: center; flex: none;
+  background: linear-gradient(145deg, #5a35c9, #4222a4); box-shadow: 0 10px 24px rgba(75, 39, 180, .28); }
+.lp-logo svg { width: 34px; height: 34px; fill: #fff; }
+.lp-brand__text { font-weight: 800; font-size: 17px; line-height: 1.08; letter-spacing: .005em; }
+.lp-nav { display: flex; align-items: center; gap: 34px; }
+.lp-nav a, .lp-nav button { font-size: 15px; font-weight: 500; color: #2c2a47; }
+.lp-nav a:hover { color: var(--lp-primary); }
+.lp-nav__form { margin: 0; }
+.lp-login { display: inline-flex; align-items: center; height: 46px; padding: 0 28px; border-radius: 13px; border: 0;
+  color: #fff !important; font-weight: 600 !important; cursor: pointer; background: linear-gradient(180deg, #5532bb, #4524ab);
+  box-shadow: 0 10px 22px rgba(75, 39, 180, .25); }
+.lp-login:hover { background: linear-gradient(180deg, #5d3ac4, #4b2ab3); }
+
+/* ---- hero ---- */
+.lp-hero { position: relative; text-align: center; padding: 72px clamp(16px, 4vw, 48px) 0; }
+.lp-orbit { position: absolute; left: 50%; top: -90px; width: min(1180px, 150vw); aspect-ratio: 1; transform: translateX(-50%);
+  border: 1px solid rgba(75, 39, 180, .15); border-radius: 50%; pointer-events: none;
+  -webkit-mask-image: linear-gradient(180deg, #000 55%, transparent 78%); mask-image: linear-gradient(180deg, #000 55%, transparent 78%); }
+.lp-orbit::before { content: ""; position: absolute; inset: 70px; border: 1px solid rgba(75, 39, 180, .08); border-radius: 50%; }
+.lp-dot { position: absolute; width: 9px; height: 9px; border-radius: 50%; background: #7c5ce0; box-shadow: 0 0 0 6px rgba(124, 92, 224, .12); pointer-events: none; }
+.lp-dot--1 { left: 19%; top: 205px; } .lp-dot--2 { left: 8%; top: 355px; width: 7px; height: 7px; }
+.lp-dot--3 { right: 11%; top: 250px; width: 7px; height: 7px; } .lp-dot--4 { right: 21%; top: 520px; }
+.lp-chip { position: absolute; z-index: 1; display: grid; place-items: center; gap: 2px; width: 88px; height: 88px; border-radius: 24px;
+  background: #fff; color: var(--lp-ink); font-weight: 800; font-size: 14px; letter-spacing: -.01em;
+  box-shadow: 0 18px 44px rgba(75, 39, 180, .14), 0 2px 6px rgba(17, 16, 43, .04); }
+.lp-chip small { display: block; font-size: 10px; font-weight: 600; color: var(--lp-muted); letter-spacing: 0; }
+.lp-chip--soon { background: rgba(255, 255, 255, .6); border: 1.5px dashed #c9bff0; box-shadow: none; color: var(--lp-primary); align-content: center; }
+.lp-chip--soon b { font-size: 24px; line-height: 1; font-weight: 600; }
+.lp-chip--soon small { color: var(--lp-primary); font-size: 10.5px; line-height: 1.2; padding: 0 8px; }
+.lp-chip--1 { left: 10%; top: 150px; } .lp-chip--2 { left: 13%; top: 330px; }
+.lp-chip--3 { right: 8%; top: 148px; } .lp-chip--4 { right: 11%; top: 345px; }
+.lp-hero__inner { position: relative; z-index: 2; max-width: 780px; margin: 0 auto; }
+.lp-pill { display: inline-flex; align-items: center; gap: 10px; margin: 0 0 26px; padding: 9px 18px 9px 12px; border-radius: 999px; background: #fff;
+  border: 1px solid var(--lp-line); box-shadow: 0 8px 26px rgba(75, 39, 180, .08); font-size: 14px; color: var(--lp-text); }
+.lp-pill__tick { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; background: var(--lp-soft-2); color: var(--lp-primary); }
+.lp-pill__tick svg { width: 14px; height: 14px; }
+.lp-title { margin: 0; font-size: clamp(2.35rem, 4.6vw, 4.1rem); line-height: 1.05; font-weight: 700; letter-spacing: -.035em; text-wrap: balance; font-kerning: normal; font-feature-settings: 'kern' 1; }
+.lp-lead { margin: 28px auto 0; max-width: 600px; font-size: 18px; line-height: 1.65; color: var(--lp-text); text-wrap: balance; }
+.lp-cta { margin-top: 38px; display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.lp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 12px; height: 58px; padding: 0 34px; border-radius: 13px; border: 1px solid transparent;
+  font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; transition: transform .15s ease, box-shadow .15s ease; }
+.lp-btn svg { width: 22px; height: 22px; flex: none; }
+.lp-btn--primary { color: #fff; background: linear-gradient(180deg, #5733bd 0%, #4524ab 100%); box-shadow: 0 16px 34px rgba(75, 39, 180, .30); }
+.lp-btn--primary:hover { transform: translateY(-1px); box-shadow: 0 20px 40px rgba(75, 39, 180, .36); }
+.lp-btn--ghost { color: var(--lp-primary); background: rgba(255, 255, 255, .7); border-color: var(--lp-line); box-shadow: 0 6px 18px rgba(75, 39, 180, .06); }
+.lp-btn--ghost:hover { background: #fff; }
+.lp-hint { margin: 18px 0 0; font-size: 14px; color: var(--lp-muted); }
+
+/* ---- example preview (decorative) ---- */
+.lp-example { position: relative; z-index: 2; margin: 40px auto 12px; display: inline-block; padding: 5px 14px; border-radius: 999px; background: var(--lp-soft-2);
+  color: var(--lp-primary); font-size: 12px; font-weight: 700; }
+.lp-preview { position: relative; z-index: 2; width: min(980px, 100%); margin: 0 auto; display: grid; grid-template-columns: 188px minmax(0, 1fr);
+  text-align: left; background: #fff; border: 1px solid var(--lp-line); border-radius: 26px; box-shadow: 0 40px 90px rgba(75, 39, 180, .16); overflow: hidden; }
+.lp-side { padding: 20px 14px; border-right: 1px solid var(--lp-line); background: #fcfbff; display: flex; flex-direction: column; gap: 22px; min-height: 100%; }
+.lp-side__brand { display: flex; align-items: center; gap: 10px; font-size: 10.5px; font-weight: 800; line-height: 1.1; }
+.lp-side__brand i { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(145deg, #5a35c9, #4222a4); display: grid; place-items: center; flex: none; }
+.lp-side__brand svg { width: 20px; height: 20px; fill: #fff; }
+.lp-side__item { display: flex; align-items: center; gap: 10px; height: 38px; padding: 0 12px; border-radius: 10px; font-size: 12.5px; color: #3b3a58; }
+.lp-side__item--on { background: var(--lp-soft); color: var(--lp-primary); font-weight: 700; }
+.lp-side__item svg { width: 16px; height: 16px; flex: none; }
+.lp-side__user { margin-top: auto; display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; color: #3b3a58; }
+.lp-side__user i { width: 30px; height: 30px; border-radius: 50%; background: var(--lp-soft-2); color: var(--lp-primary); display: grid; place-items: center; font-style: normal; font-weight: 800; font-size: 12px; }
+.lp-main { padding: 24px 26px 26px; min-width: 0; }
+.lp-main__head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.lp-main__title { font-size: 19px; font-weight: 700; letter-spacing: -.01em; }
+.lp-main__sub { margin-top: 6px; font-size: 11.5px; color: #4a4966; display: flex; align-items: center; gap: 6px; }
+.lp-main__sub svg { width: 14px; height: 14px; color: var(--lp-muted); }
+.lp-main__note { margin-top: 6px; font-size: 11.5px; color: var(--lp-muted); }
+.lp-select { display: inline-flex; align-items: center; gap: 10px; height: 34px; padding: 0 12px; border: 1px solid var(--lp-line); border-radius: 10px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.lp-select svg { width: 14px; height: 14px; color: var(--lp-muted); }
+.lp-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 18px; }
+.lp-stat { display: flex; align-items: center; gap: 14px; padding: 16px 18px; border: 1px solid var(--lp-line); border-radius: 14px; }
+.lp-stat i { width: 38px; height: 38px; border-radius: 50%; flex: none; display: grid; place-items: center; background: #dff3ee; color: #2f8f7b; }
+.lp-stat i svg { width: 18px; height: 18px; }
+.lp-stat--sent i { background: var(--lp-soft-2); color: var(--lp-primary); }
+.lp-stat b { display: block; font-size: 22px; letter-spacing: -.02em; line-height: 1.2; font-weight: 800; }
+.lp-stat span { font-size: 11px; color: var(--lp-muted); }
+.lp-stat em { display: block; font-style: normal; font-size: 11.5px; color: #4a4966; margin-top: 2px; }
+.lp-cols { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; margin-top: 18px; }
+.lp-block-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.lp-rows { border: 1px solid var(--lp-line); border-radius: 14px; background: #fff; }
+.lp-row { display: flex; align-items: center; gap: 12px; padding: 11px 14px; }
+.lp-row + .lp-row { border-top: 1px solid var(--lp-line); }
+.lp-row__rank { width: 26px; height: 26px; border-radius: 50%; background: var(--lp-primary); color: #fff; font-size: 11px; font-weight: 700; display: grid; place-items: center; flex: none; }
+.lp-row__who { flex: 1; min-width: 0; font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+.lp-row__who small { display: block; font-weight: 400; font-size: 10.5px; color: var(--lp-muted); }
+.lp-row__amt { font-weight: 800; font-size: 13px; }
+.lp-row__go { width: 14px; height: 14px; color: var(--lp-muted); flex: none; }
+.lp-unid { display: flex; align-items: center; gap: 12px; padding: 14px 16px; border-radius: 14px; background: var(--lp-soft); border: 1px solid #eee9fb; }
+.lp-unid i { width: 36px; height: 36px; border-radius: 50%; background: var(--lp-soft-2); color: var(--lp-primary); display: grid; place-items: center; flex: none; }
+.lp-unid i svg { width: 18px; height: 18px; }
+.lp-unid b { font-size: 12.5px; display: block; } .lp-unid small { font-size: 10.5px; color: var(--lp-muted); display: block; margin: 1px 0 3px; } .lp-unid strong { font-size: 13px; font-weight: 800; }
+.lp-recent { margin-top: 14px; }
+.lp-recent__row { display: grid; grid-template-columns: 52px 1fr auto 14px; align-items: center; gap: 10px; padding: 9px 12px; font-size: 11.5px; }
+.lp-recent__row + .lp-recent__row { border-top: 1px solid var(--lp-line); }
+.lp-recent__row span:first-child { color: var(--lp-muted); } .lp-recent__row b { font-weight: 700; }
+
+/* ---- sections below the hero ---- */
+.lp-section { max-width: 1080px; margin: 0 auto; padding: 104px 24px 0; }
+.lp-section h2 { margin: 0; text-align: center; font-size: clamp(1.7rem, 3vw, 2.3rem); letter-spacing: -.03em; font-weight: 800; text-wrap: balance; }
+.lp-section__sub { margin: 14px auto 0; max-width: 560px; text-align: center; color: var(--lp-text); line-height: 1.6; }
+.lp-steps, .lp-features { margin: 48px 0 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+.lp-card { background: #fff; border: 1px solid var(--lp-line); border-radius: 20px; padding: 28px; box-shadow: 0 14px 40px rgba(75, 39, 180, .06); }
+.lp-card h3 { margin: 18px 0 8px; font-size: 18px; letter-spacing: -.01em; }
+.lp-card p { margin: 0; color: var(--lp-text); line-height: 1.6; font-size: 15px; }
+.lp-num { width: 40px; height: 40px; border-radius: 50%; background: var(--lp-primary); color: #fff; font-weight: 800; display: grid; place-items: center; }
+.lp-tile { width: 46px; height: 46px; border-radius: 14px; background: var(--lp-soft-2); color: var(--lp-primary); display: grid; place-items: center; }
+.lp-tile svg { width: 22px; height: 22px; }
+.lp-footer { margin-top: 96px; padding: 28px 24px 44px; text-align: center; color: var(--lp-muted); font-size: 14px; border-top: 1px solid var(--lp-line); }
+
+/* ---- responsive ---- */
+@media (max-width: 1180px) { .lp-chip, .lp-dot { display: none; } }
+@media (max-width: 900px) {
+  .lp-preview { grid-template-columns: minmax(0, 1fr); }
+  .lp-side { display: none; }
+  .lp-steps, .lp-features { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .lp-header { padding: 18px 20px; }
+  .lp-nav { gap: 18px; }
+  .lp-nav__sec { display: none; }
+  .lp-hero { padding-top: 40px; }
+  .lp-lead { font-size: 16px; }
+  .lp-btn { width: 100%; max-width: 360px; height: 54px; }
+  .lp-example { margin-top: 44px; }
+  .lp-main { padding: 18px 16px; }
+  .lp-stats, .lp-cols { grid-template-columns: 1fr; }
+  .lp-select { display: none; }
+  .lp-recent { display: none; }
+  .lp-section { padding-top: 72px; }
+}
+@media (max-width: 440px) {
+  .lp-brand__text { display: none; }
+  .lp-logo { width: 44px; height: 44px; border-radius: 13px; }
+  .lp-login { height: 42px; padding: 0 20px; }
+}
+</style>
+{% endblock %}
+
+{% block layout %}
+<div class="lp">
+  <header class="lp-header">
+    <a class="lp-brand" href="{% url 'home' %}" aria-label="Where'd My Money Go? home">
+      <span class="lp-logo" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6.2 10.2h3.3L7.9 18H4.6zM13.2 6h4.4L14.3 18h-4.4z" transform="translate(1.1 0)"/></svg></span>
+      <span class="lp-brand__text" aria-hidden="true">WHERE'D MY<br>MONEY GO?</span>
+    </a>
+    <nav class="lp-nav" aria-label="Primary">
+      <a class="lp-nav__sec" href="#features">Features</a>
+      <a class="lp-nav__sec" href="#how-it-works">How it works</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'reports:history' %}">Reports</a>
+        <form method="post" action="{% url 'accounts:logout' %}" class="lp-nav__form">{% csrf_token %}<button type="submit" class="lp-login">Log out</button></form>
+      {% else %}
+        <a class="lp-login" href="{% url 'accounts:login' %}">Log in</a>
+      {% endif %}
+    </nav>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <section class="lp-hero" aria-labelledby="hero-title">
+      <div class="lp-orbit" aria-hidden="true"></div>
+      <span class="lp-dot lp-dot--1" aria-hidden="true"></span><span class="lp-dot lp-dot--2" aria-hidden="true"></span>
+      <span class="lp-dot lp-dot--3" aria-hidden="true"></span><span class="lp-dot lp-dot--4" aria-hidden="true"></span>
+      <div aria-hidden="true">
+        <!-- <span class="lp-chip lp-chip--1">GTBank</span>
+        <span class="lp-chip lp-chip--2">Moniepoint</span>
+        <span class="lp-chip lp-chip--3">OPay</span>
+        <span class="lp-chip lp-chip--4 lp-chip--soon"><b>+</b><small>More banks soon</small></span> -->
+      </div>
+
+      <div class="lp-hero__inner">
+        <p class="lp-pill"><span class="lp-pill__tick" aria-hidden="true"><svg><use href="#i-check"></use></svg></span>Reads GTBank, Moniepoint and OPay statements</p>
+        <h1 id="hero-title" class="lp-title">Your bank statement, finally understandable.</h1>
+        <p class="lp-lead">Upload your bank statement and get a clear, simple breakdown of where your money went &mdash; no guesswork, no confusion, just the facts from your statement.</p>
+        <div class="lp-cta">
+          {% if user.is_authenticated %}
+            <button type="button" class="lp-btn lp-btn--primary" data-open-upload aria-haspopup="dialog" aria-controls="upload-modal">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4 14.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3.5"/></svg>
+              Upload Statement
+            </button>
+          {% else %}
+            <a class="lp-btn lp-btn--primary" href="{% url 'accounts:login' %}?next={% url 'home' %}%3Fupload%3D1">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V4M7.5 8.5 12 4l4.5 4.5M4 14.5V18a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3.5"/></svg>
+              Upload Statement
+            </a>
+          {% endif %}
+          <a class="lp-btn lp-btn--ghost" href="#how-it-works">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="m10.2 8.6 5 3.4-5 3.4z" fill="currentColor"/></svg>
+            See how it works
+          </a>
+        </div>
+        <p class="lp-hint">PDF and CSV statements supported.{% if not user.is_authenticated %} You'll be asked to log in first.{% endif %}</p>
+      </div>
+
+      <p class="lp-example">Example report</p>
+      <div class="lp-preview" aria-hidden="true">
+        <div class="lp-side">
+          <div class="lp-side__brand"><i><svg viewBox="0 0 24 24"><path d="M6.2 10.2h3.3L7.9 18H4.6zM13.2 6h4.4L14.3 18h-4.4z" transform="translate(1.1 0)"/></svg></i><span>WHERE'D MY<br>MONEY GO?</span></div>
+          <div>
+            <div class="lp-side__item lp-side__item--on"><svg viewBox="0 0 24 24"><use href="#i-home"></use></svg>Home</div>
+            <div class="lp-side__item"><svg viewBox="0 0 24 24"><use href="#i-list"></use></svg>Reports</div>
+            <div class="lp-side__item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c1.5-4 14.5-4 16 0"/></svg>Account</div>
+          </div>
+          <div class="lp-side__user"><i>Y</i>Your account</div>
+        </div>
+        <div class="lp-main">
+          <div class="lp-main__head">
+            <div>
+              <div class="lp-main__title">Money Report</div>
+              <div class="lp-main__sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg>September 2026</div>
+              <div class="lp-main__note">Here's where your money went this month.</div>
+            </div>
+            <span class="lp-select"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16"/></svg>Sep 2026<svg viewBox="0 0 24 24"><use href="#i-chevron-down"></use></svg></span>
+          </div>
+          <div class="lp-stats">
+            <div class="lp-stat"><i><svg viewBox="0 0 24 24"><use href="#i-arrow-down-left"></use></svg></i><div><span>Total Received</span><b>₦450,000</b><em>12 transactions</em></div></div>
+            <div class="lp-stat lp-stat--sent"><i><svg viewBox="0 0 24 24"><use href="#i-arrow-up-right"></use></svg></i><div><span>Total Sent</span><b>₦327,500</b><em>18 transactions</em></div></div>
+          </div>
+          <div class="lp-cols">
+            <div>
+              <div class="lp-block-title">Where Your Money Went</div>
+              <div class="lp-rows">
+                <div class="lp-row"><span class="lp-row__rank">1</span><span class="lp-row__who">Ahmed Musa<small>8 transactions</small></span><span class="lp-row__amt">₦100,000</span><svg class="lp-row__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></div>
+                <div class="lp-row"><span class="lp-row__rank">2</span><span class="lp-row__who">Grace Okafor<small>5 transactions</small></span><span class="lp-row__amt">₦65,000</span><svg class="lp-row__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></div>
+                <div class="lp-row"><span class="lp-row__rank">3</span><span class="lp-row__who">Chidi Electricals<small>3 transactions</small></span><span class="lp-row__amt">₦42,000</span><svg class="lp-row__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></div>
+              </div>
+            </div>
+            <div>
+              <div class="lp-unid"><i><svg viewBox="0 0 24 24"><use href="#i-info"></use></svg></i><div><b>Unidentified Recipients</b><small>2 transactions</small><strong>₦18,500</strong></div></div>
+              <div class="lp-recent">
+                <div class="lp-block-title">Recent Transactions</div>
+                <div class="lp-rows">
+                  <div class="lp-recent__row"><span>01 Sep</span><b>Ahmed Musa</b><b>₦15,000</b><svg class="lp-row__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></div>
+                  <div class="lp-recent__row"><span>02 Sep</span><b>Chidi Electricals</b><b>₦42,000</b><svg class="lp-row__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></div>
+                  <div class="lp-recent__row"><span>04 Sep</span><b>Grace Okafor</b><b>₦10,000</b><svg class="lp-row__go" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 6 6 6-6 6"/></svg></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works" class="lp-section" aria-labelledby="how-title">
+      <h2 id="how-title">How it works</h2>
+      <p class="lp-section__sub">Three steps, and nothing for you to fill in.</p>
+      <ol class="lp-steps">
+        <li class="lp-card"><span class="lp-num">1</span><h3>Add your bank statement</h3><p>Choose the PDF or CSV your bank gave you. You don't need to enter anything about your transactions.</p></li>
+        <li class="lp-card"><span class="lp-num">2</span><h3>We read it</h3><p>Names, amounts and narrations are read exactly as your statement writes them. Nothing is guessed or added.</p></li>
+        <li class="lp-card"><span class="lp-num">3</span><h3>See where it went</h3><p>Get a simple report: what came in, what went out, and who received the most.</p></li>
+      </ol>
+    </section>
+
+    <section id="features" class="lp-section" aria-labelledby="features-title">
+      <h2 id="features-title">Built around what your statement actually says</h2>
+      <ul class="lp-features">
+        <li class="lp-card"><span class="lp-tile" aria-hidden="true"><svg><use href="#i-bolt"></use></svg></span><h3>Quick &amp; easy</h3><p>Upload your statement and get your report in a moment.</p></li>
+        <li class="lp-card"><span class="lp-tile" aria-hidden="true"><svg><use href="#i-eye"></use></svg></span><h3>Straight from your statement</h3><p>Only what your statement says. Nothing is guessed or added.</p></li>
+        <li class="lp-card"><span class="lp-tile" aria-hidden="true"><svg><use href="#i-shield"></use></svg></span><h3>Your file isn't kept</h3><p>Your original statement is deleted as soon as your report is ready.</p></li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="lp-footer">
+    <p>Where'd My Money Go? &middot; Your bank statement, finally understandable.</p>
+  </footer>
+</div>
+{% endblock %}
+
+{% block modals %}
+  {% if user.is_authenticated %}{% include "partials/_upload_modal.html" %}{% endif %}
+{% endblock %}
+
+{% block scripts %}
+  {% if user.is_authenticated %}
+  <script src="{% static 'js/validation.js' %}" defer></script>
+  <script src="{% static 'js/messages.js' %}" defer></script>
+  <script src="{% static 'js/api.js' %}" defer></script>
+  <script src="{% static 'js/modal.js' %}" defer></script>
+  <script src="{% static 'js/upload.js' %}" defer></script>
+  {% endif %}
+{% endblock %}

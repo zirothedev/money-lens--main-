@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Create account · Where'd My Money Go?{% endblock %}
+{% block layout %}
+<div class="auth">
+  <!-- <aside class="auth__brand">
+    <img src="{% static 'img/brand-banner.jpg' %}" width="1000" height="750" alt="Where'd My Money Go? logo: the name seen through a magnifying glass">
+    <p class="auth__tagline">Your bank statement, finally understandable.</p>
+  </aside> -->
+  <main id="main" class="auth__panel" tabindex="-1">
+    <div class="auth__card">
+      <h1 class="auth__title">Create your account</h1>
+      <p class="auth__text">Your reports are saved to your account. Your original statements are not.</p>
+      <form method="post" novalidate>
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="field{% if field.errors %} has-error{% endif %}">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% if field.help_text %}<div class="field__help">{{ field.help_text|safe }}</div>{% endif %}
+          {% for e in field.errors %}<p class="field__error" role="alert">{{ e }}</p>{% endfor %}
+        </div>
+        {% endfor %}
+        <button type="submit" class="btn btn--primary btn--block">Create account</button>
+      </form>
+      <p class="auth__switch">Already have an account? <a href="{% url 'accounts:login' %}">Log in</a></p>
+    </div>
+  </main>
+</div>
+{% endblock %}
